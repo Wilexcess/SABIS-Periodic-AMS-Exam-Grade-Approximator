@@ -6,7 +6,7 @@
 
 ## General Formula
 
-<img src="https://imgur.com/XiKWP3u" alt="Description">
+<img src="https://i.imgur.com/XiKWP3u.jpg" alt="Image">
 
 ---
 
