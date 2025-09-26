@@ -6,27 +6,7 @@
 
 ## General Formula
 
-$$
-\text{Grade} =
-\Big(\frac{100}{Q} \times (Q - M)\Big)
-+ \Big(\frac{100}{Q} \times \frac{76}{100} \times (W - TP)\Big)
-+ \Big(\frac{100}{Q} \times \frac{60}{100} \times S\Big)
-+ \sum_{i=1}^{TP} \left[
-\Big(\frac{100}{Q} \times \frac{BCR_i}{PQ_i}\Big) +
-\Big(\frac{100}{Q} \times \frac{76}{100} \times \frac{ACR_i}{PQ_i}\Big)
-\right]
-$$
-
-**Where:**
-
-- **Q** = total questions  
-- **M** = mistakes  
-- **W** = fixed written questions  
-- **S** = fixed static questions  
-- **TP** = total partial modules  
-- **PQᵢ** = total questions in partial i  
-- **BCRᵢ** = correct before retake in partial i  
-- **ACRᵢ** = correct after retake in partial i  
+<blockquote class="imgur-embed-pub" lang="en" data-id="9XEw8Zl"><a href="https://imgur.com/9XEw8Zl">View post on imgur.com</a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
 
 ---
 
