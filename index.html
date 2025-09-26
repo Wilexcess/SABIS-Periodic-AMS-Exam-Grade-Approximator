@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Exam Grade Approximator — Combined</title>
+<style>
+  :root{
+    --bg:#f4f6f9;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --accent:#246bfe;
+    --success:#d4edda;
+    --success-color:#155724;
+    --error:#f8d7da;
+    --error-color:#721c24;
+    --shadow: 0 6px 20px rgba(37, 78, 255, 0.08);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  html,body{height:100%}
+  body{
+    margin:0;
+    min-height:100%;
+    background:var(--bg);
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:28px 16px;
+    color:#111827;
+  }
+  .wrap{
+    width:100%;
+    max-width:920px;
+  }
+  .header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  h1{margin:0;font-size:20px}
+  .sub{color:var(--muted);font-size:13px;margin-top:4px}
+  .card{
+    background:var(--card);
+    border-radius:14px;
+    padding:18px;
+    box-shadow:var(--shadow);
+    border:1px solid rgba(15,23,42,0.04);
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+  label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+  input[type=number], input[type=text]{
+    width:100%;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid #e6e9ef;
+    font-size:15px;
+    box-sizing:border-box;
+  }
+  .full{grid-column:1/-1}
+  .controls{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  button{
+    padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:700;
+    font-size:14px;
+  }
+  .btn-add{background:linear-gradient(90deg,var(--accent),#1a56d6);color:white}
+  .btn-calc{background:#10b981;color:white}
+  .btn-reset{background:#ef4444;color:white}
+  .btn-secondary{background:#f3f4f6;color:#111827}
+  #tpCounter{font-weight:700;color:var(--muted)}
+  .partials-wrap{margin-top:14px}
+  .partial{
+    border-radius:10px;
+    background:#fbfdff;
+    border:1px solid #e6eefc;
+    margin-top:10px;
+    overflow:hidden;
+  }
+  .partial-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 12px;
+    cursor:pointer;
+    gap:8px;
+  }
+  .partial-title{font-weight:700}
+  .partial-actions{display:flex;gap:8px;align-items:center}
+  .small-btn{background:#fff;border:1px solid #e6eefc;padding:6px 8px;border-radius:8px;cursor:pointer;font-weight:700}
+  .partial-body{padding:12px;border-top:1px solid rgba(15,23,42,0.03);display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .result{
+    margin-top:18px;padding:14px;border-radius:10px;font-weight:800;text-align:center;font-size:18px;
+    transition:all .25s ease;
+  }
+  .result.empty{background:transparent;color:inherit;border:1px dashed rgba(15,23,42,0.04)}
+  .result.green{background:var(--success);color:var(--success-color)}
+  .result.red{background:var(--error);color:var(--error-color)}
+  .debug{margin-top:12px;padding:12px;background:#fbfbfb;border-radius:8px;border:1px solid #eef2ff;font-family:monospace;white-space:pre-wrap;display:none}
+  .eq{
+    margin-top:14px;padding:10px;background:#f8fafc;border-radius:8px;border:1px solid #eef2ff;font-size:13px;color:var(--muted)
+  }
+  .footer{margin-top:12px;color:var(--muted);font-size:13px}
+  @media (max-width:720px){
+    .grid{grid-template-columns:1fr}
+    .partial-body{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <h1>Exam Grade Approximator</h1>
+      <div class="sub">Polished UI with stable calculation logic.</div>
+    </div>
+    <div id="tpCounter">TP: 0</div>
+  </div>
+
+  <div class="card">
+    <div class="grid">
+      <div>
+        <label for="Q">Total questions (Q)</label>
+        <input id="Q" type="number" min="1" step="1" placeholder="e.g. 100">
+      </div>
+      <div>
+        <label for="M">Mistakes (M)</label>
+        <input id="M" type="number" min="0" step="1" placeholder="e.g. 12">
+      </div>
+
+      <div>
+        <label for="W">Fixed written questions (W)</label>
+        <input id="W" type="number" min="0" step="1" placeholder="e.g. 5">
+      </div>
+      <div>
+        <label for="S">Fixed static questions (S)</label>
+        <input id="S" type="number" min="0" step="1" placeholder="e.g. 3">
+      </div>
+
+      <div class="full">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-add" onclick="addPartial()">➕ Add Partial Question</button>
+          <button class="btn-calc" onclick="calculate()">Calculate</button>
+          <button class="btn-reset" onclick="resetAll()">Reset</button>
+          <button class="btn-secondary" onclick="toggleDebug()">Toggle Debug</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="partials-wrap" id="partials"></div>
+
+    <div id="result" class="result empty">Result will appear here</div>
+
+    <div id="debug" class="debug"></div>
+
+    <div class="eq">
+      <strong>Stored equation:</strong><br>
+      Grade = (100/Q)*(Q - M) + (100/Q)*(76/100)*(W - TP) + (100/Q)*(60/100)*S + Σ<sub>i=1..TP</sub>[ (100/Q)*(BCRᵢ/PQᵢ) + (100/Q)*(76/100)*(ACRᵢ/PQᵢ) ]
+    </div>
+
+    <div class="footer">
+      <strong>Variable key:</strong> Q = total questions, M = mistakes, W = written fixed, S = static fixed, PQ# = partial questions in module #, BCR# = correct before retake, ACR# = correct after retake, TP = total partial modules.
+    </div>
+  </div>
+</div>
+
+<script>
+  const partialsContainer = document.getElementById("partials");
+  const resultDiv = document.getElementById("result");
+  const debugDiv = document.getElementById("debug");
+
+  function updateTP() {
+    const tp = partialsContainer.children.length;
+    document.getElementById('tpCounter').textContent = 'TP: ' + tp;
+  }
+
+  function addPartial() {
+    const index = partialsContainer.children.length + 1;
+    const wrapper = document.createElement("div");
+    wrapper.className = 'partial';
+    wrapper.id = 'partial-' + index;
+
+    wrapper.innerHTML = `
+      <div class="partial-header">
+        <div class="partial-title">Partial ${index}</div>
+        <div class="partial-actions">
+          <div style="font-size:13px;color:var(--muted);margin-right:8px">click to expand</div>
+          <button class="small-btn" title="remove" onclick="removePartial(this)">❌</button>
+        </div>
+      </div>
+      <div class="partial-body" style="display:none">
+        <div>
+          <label>PQ${index} (total in this partial)</label>
+          <input id="PQ${index}" type="number" min="0" step="1">
+        </div>
+        <div>
+          <label>BCR${index} (correct before retake)</label>
+          <input id="BCR${index}" type="number" min="0" step="1">
+        </div>
+        <div>
+          <label>ACR${index} (correct after retake)</label>
+          <input id="ACR${index}" type="number" min="0" step="1">
+        </div>
+      </div>
+    `;
+    partialsContainer.appendChild(wrapper);
+
+    wrapper.querySelector('.partial-header').addEventListener('click', function(e) {
+      if (e.target.tagName.toLowerCase() === 'button') return;
+      const body = wrapper.querySelector('.partial-body');
+      body.style.display = (body.style.display === 'none' || body.style.display === '') ? 'grid' : 'none';
+    });
+
+    updateTP();
+  }
+
+  function removePartial(btn) {
+    btn.closest(".partial").remove();
+    reindexPartials();
+    updateTP();
+  }
+
+  function reindexPartials() {
+    [...partialsContainer.children].forEach((partial, i) => {
+      const idx = i + 1;
+      partial.id = `partial-${idx}`;
+      partial.querySelector(".partial-title").innerText = `Partial ${idx}`;
+      
+      const labels = partial.querySelectorAll("label");
+      labels[0].innerText = `PQ${idx} (total in this partial)`;
+      labels[1].innerText = `BCR${idx} (correct before retake)`;
+      labels[2].innerText = `ACR${idx} (correct after retake)`;
+
+      const inputs = partial.querySelectorAll("input");
+      inputs[0].id = `PQ${idx}`;
+      inputs[1].id = `BCR${idx}`;
+      inputs[2].id = `ACR${idx}`;
+    });
+  }
+
+  function calculate() {
+    const Q = parseFloat(document.getElementById("Q").value);
+    const M = parseFloat(document.getElementById("M").value) || 0;
+    let W = parseFloat(document.getElementById("W").value) || 0;
+    const S = parseFloat(document.getElementById("S").value) || 0;
+    
+    if (!Q || Q <= 0) {
+        alert('Please enter a valid Q (total questions > 0).');
+        return;
+    }
+
+    const TP = partialsContainer.children.length;
+    W = W - TP; 
+
+    let grade = ((100 / Q) * (Q - M)) + ((100 / Q) * (76 / 100) * W) + ((100 / Q) * (60 / 100) * S);
+    let debugText = `Stored equation:\nGrade = (100/Q)*(Q - M) + (100/Q)*(76/100)*(W - TP) + (100/Q)*(60/100)*S + Σ[ (100/Q)*(BCRᵢ/PQᵢ) + (100/Q)*(76/100)*(ACRᵢ/PQᵢ) ]\n\n`;
+    debugText += `Q=${Q}, M=${M}, W(adjusted)=${W}, S=${S}, TP=${TP}\n`;
+    debugText += `Base = ((100/${Q})*(${Q}-${M})) + ((100/${Q})*0.76*${W}) + ((100/${Q})*0.60*${S})\n`;
+
+    for (let i = 0; i < TP; i++) {
+      const idx = i + 1;
+      const PQ = parseFloat(document.getElementById("PQ" + idx).value) || 0;
+      const BCR = parseFloat(document.getElementById("BCR" + idx).value) || 0;
+      const ACR = parseFloat(document.getElementById("ACR" + idx).value) || 0;
+      if (PQ > 0) {
+        grade += (100 / Q) * (BCR / PQ);
+        grade += (100 / Q) * (76 / 100) * (ACR / PQ);
+        debugText += `Partial ${idx}: +((100/${Q})*(${BCR}/${PQ})) + ((100/${Q})*0.76*(${ACR}/${PQ}))\n`;
+      } else {
+         debugText += `Partial ${idx}: PQ=${PQ} (ignored, must be > 0)\n`;
+      }
+    }
+
+    resultDiv.innerText = "Approximate Grade: " + grade.toFixed(2) + "%";
+    resultDiv.className = "result " + (grade >= 60 ? "green" : "red");
+    debugDiv.innerText = debugText;
+  }
+
+  function resetAll() {
+    document.getElementById("Q").value = '';
+    document.getElementById("M").value = '';
+    document.getElementById("W").value = '';
+    document.getElementById("S").value = '';
+    partialsContainer.innerHTML = "";
+    updateTP();
+    resultDiv.textContent = 'Result will appear here';
+    resultDiv.className = 'result empty';
+    debugDiv.textContent = '';
+    debugDiv.style.display = 'none';
+  }
+
+  function toggleDebug() {
+    const isHidden = debugDiv.style.display === "none" || debugDiv.style.display === '';
+    debugDiv.style.display = isHidden ? "block" : "none";
+    if (isHidden) {
+      calculate(); 
+    }
+  }
+</script>
+</body>
+</html>
