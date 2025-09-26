@@ -22,7 +22,7 @@
 
 ## Usage
 
-1. Open `https://wilexcess.github.io/SABIS-Periodic-AMS-Exam-Grade-Approximator/` in a browser
+1. Open https://wilexcess.github.io/SABIS-Periodic-AMS-Exam-Grade-Approximator/ in a browser
 2. Enter **Total Questions (Q)**, **Mistakes (M)**, **Written (W)**, and **Static (S)**  
 3. Add **Partial Questions** (PQ, BCR, ACR) if applicable  
 4. Click **Calculate** to see your approximate grade  
